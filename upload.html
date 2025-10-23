@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload - HoloVerse</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">HoloVerse</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="upload.html" class="active">Upload</a></li>
+                <li><a href="editor.html">3D Editor</a></li>
+                <li><a href="ar-preview.html">AR Preview</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section>
+            <h1>Upload 3D Model</h1>
+            <div class="upload-area" id="uploadArea">
+                <h2>Drag & Drop</h2>
+                <p>or click to browse for files</p>
+                <input type="file" id="fileInput" accept=".obj,.gltf,.glb,.fbx" style="display: none;">
+                <p style="margin-top: 1rem; opacity: 0.7;">Supported formats: OBJ, GLTF, GLB, FBX</p>
+            </div>
+            
+            <div id="fileInfo" style="margin-top: 2rem; display: none;">
+                <h3>File Information</h3>
+                <p id="fileName"></p>
+                <p id="fileSize"></p>
+                <button class="btn btn-primary" onclick="processUpload()">Process Upload</button>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 HoloVerse. All rights reserved.</p>
+    </footer>
+    
+    <script src="main.js"></script>
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'rgba(255, 255, 255, 0.3)';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = 'rgba(255, 255, 255, 0.1)';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'rgba(255, 255, 255, 0.1)';
+            const file = e.dataTransfer.files[0];
+            handleFile(file);
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            handleFile(file);
+        });
+        
+        function handleFile(file) {
+            if (file) {
+                fileName.textContent = 'File: ' + file.name;
+                fileSize.textContent = 'Size: ' + (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                fileInfo.style.display = 'block';
+            }
+        }
+        
+        function processUpload() {
+            alert('Upload processing! Redirecting to editor...');
+            window.location.href = 'editor.html';
+        }
+    </script>
+</body>
+</html>
