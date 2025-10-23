@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Preview - HoloVerse</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">HoloVerse</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="upload.html">Upload</a></li>
+                <li><a href="editor.html">3D Editor</a></li>
+                <li><a href="ar-preview.html" class="active">AR Preview</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section>
+            <h1>AR Preview</h1>
+            <p>View your 3D model in augmented reality</p>
+            
+            <div id="canvas-container"></div>
+            
+            <div class="controls">
+                <button onclick="toggleRotation()">Toggle Rotation</button>
+                <button onclick="resetView()">Reset View</button>
+                <button onclick="changeBackground('#ffffff')">White BG</button>
+                <button onclick="changeBackground('#000000')">Black BG</button>
+                <button onclick="takeScreenshot()">Screenshot</button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <p>AR Mode: Use your device camera to place the 3D model in your environment</p>
+                <button class="btn btn-primary" onclick="activateAR()">Activate AR Mode</button>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 HoloVerse. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        let scene, camera, renderer, mesh;
+        let isRotating = true;
+        
+        function initARPreview() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x333333);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / 500, 0.1, 1000);
+            camera.position.z = 5;
+            
+            // Renderer
+            const container = document.getElementById('canvas-container');
+            renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+            renderer.setSize(container.offsetWidth, 500);
+            container.appendChild(renderer.domElement);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+            
+            // Create demo model
+            const geometry = new THREE.TorusKnotGeometry(1, 0.3, 100, 16);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: 0x667eea,
+                emissive: 0x333366,
+                shininess: 100
+            });
+            mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+            
+            // Animation loop
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            if (mesh && isRotating) {
+                mesh.rotation.x += 0.005;
+                mesh.rotation.y += 0.01;
+            }
+            renderer.render(scene, camera);
+        }
+        
+        function toggleRotation() {
+            isRotating = !isRotating;
+        }
+        
+        function resetView() {
+            camera.position.set(0, 0, 5);
+            camera.lookAt(0, 0, 0);
+            if (mesh) {
+                mesh.rotation.set(0, 0, 0);
+            }
+        }
+        
+        function changeBackground(color) {
+            scene.background = new THREE.Color(color);
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.offsetWidth / 500;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.offsetWidth, 500);
+        }
+        
+        function takeScreenshot() {
+            const imgData = renderer.domElement.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = 'holoverse-screenshot.png';
+            link.href = imgData;
+            link.click();
+            alert('Screenshot saved!');
+        }
+        
+        function activateAR() {
+            alert('AR Mode would typically require WebXR API and AR-capable device. This is a simulation.');
+        }
+        
+        // Initialize on load
+        window.onload = initARPreview;
+    </script>
+</body>
+</html>
